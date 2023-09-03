@@ -21,11 +21,12 @@ function utility(state){
 
 function actions(currentState){
     let t=[];
-    currentState.forEach((element , index) => {
-        if(element===undefined){
+
+    for(i=0; i< currentState.length; i++) {
+        if(currentState[i] === undefined) {
             t.push(index);
-        }
-    });
+        }  
+    }
     return t;
 }
 
@@ -36,7 +37,8 @@ function terminal(currstate){
     return true;
 }
 function result(action , currstate, p){
-    let arr = currstate.forEach(e=>{return e;})
+    let arr = []
+    currstate.forEach(e=>arr.push(e));
     return arr;
 }
 let t;
@@ -95,7 +97,7 @@ function selectBox(id){
     terminate(state);
     t=min_ai(state);
     console.log(t);
-    document.getElementById(toString(t)).innerHTML = "O";
+    document.getElementById(t[1].toString()).innerHTML = "O";
     terminate(state);
     state[t]="O";
 }
