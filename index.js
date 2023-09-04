@@ -7,11 +7,12 @@ function utility(state){
     let p2 = state.map((element)=>{  //for ai
         return element==="O";
     })
+    // console.log(p1);
     let u;
     if((p1[0] && p1[1] && p1[2]) || (p1[3] && p1[4] && p1[5]) || (p1[6] && p1[7] && p1[8]) || (p1[0] && p1[3] && p1[6]) || (p1[1] && p1[4] && p1[7]) || (p1[2] && p1[5] && p1[8]) || (p1[0] && p1[4] && p1[8]) || (p1[2] && p1[4] && p1[6])){
 		u = 1;
 	}
-    if((p2[0] && p2[1] && p2[2]) || (p2[3] && p2[4] && p2[5]) || (p2[6] && p2[7] && p2[8]) || (p2[0] && p2[3] && p2[6]) || (p2[1] && p2[4] && p2[7]) || (p2[2] && p2[5] && p2[8]) || (p2[0] && p2[4] && p2[8]) || (p2[2] && p2[4] && p2[6])){
+    else if((p2[0] && p2[1] && p2[2]) || (p2[3] && p2[4] && p2[5]) || (p2[6] && p2[7] && p2[8]) || (p2[0] && p2[3] && p2[6]) || (p2[1] && p2[4] && p2[7]) || (p2[2] && p2[5] && p2[8]) || (p2[0] && p2[4] && p2[8]) || (p2[2] && p2[4] && p2[6])){
 		u = -1;
 	}
     else u=0;
@@ -21,34 +22,44 @@ function utility(state){
 
 function actions(currentState){
     let t=[];
-    currentState.forEach((element , index) => {
-        if(element===undefined){
-            t.push(index);
-        }
-    });
+
+    for(i=0; i< currentState.length; i++) {
+        if(currentState[i] === undefined) {
+            t.push(i);
+        }  
+    }
     return t;
 }
 
 function terminal(currstate){
+    let u = utility(currstate);
+    if(u==1 || u==-1){
+        return true;
+    }
     for(e of currstate){
         if(e===undefined) return false;
     }
     return true;
 }
 function result(action , currstate, p){
-    let arr = currstate.forEach(e=>{return e;})
+    let arr = []
+    for(let i=0;i<9;i++){
+        arr.push(currstate[i]);
+    }
+    arr[action]=p;
     return arr;
 }
-let t;
+
 function min_ai(currstate){
     if(terminal(currstate)){
-        return utility(currstate);
+        return [utility(currstate),0];
     }
     let v = 1000;
     let acc;
     let a = actions(currstate);
     for(action of a){
-        temp = max(result(action,currstate,"O"));
+        let temp = max(result(action,currstate,"O"));
+        // console.log(temp);
         if(temp<v){
             v = temp;
             acc = action;
@@ -59,6 +70,8 @@ function min_ai(currstate){
 }
 function max(currstate){
     if(terminal(currstate)){
+        // let u = utility(currstate);
+        // console.log(u);
         return utility(currstate);
     }
     let v = -1000;
@@ -69,23 +82,25 @@ function max(currstate){
     return v;
 }
 
-// state = ["O", "X", undefined, "X", "O", "O", "X","X",undefined];
-// console.log(min_ai(state),t);
+state = ["O", "X", undefined, "X", "O", "O", "X","X",undefined];
+console.log(min_ai(state));
 
-function terminate(state){
-    if(terminal(state)){
-        let u = utility(state);
-        if(u==0){
-            alert("draw");
-        }
-        else if(u==1){
+function terminate(currstate){
+        let u = utility(currstate);
+
+        if(u==1){
             alert("YOu win");
+            location.reload();
         }
-        else{
+        else if(u==-1){
+            alert("THe AI win");
+            location.reload();
+        }
+        else if(terminal(state)){
             alert("you lose ai win");
+            location.reload();
         }
-        location.reload();
-    }
+        
 }
 
 function selectBox(id){
@@ -95,7 +110,8 @@ function selectBox(id){
     terminate(state);
     t=min_ai(state);
     console.log(t);
-    document.getElementById(toString(t)).innerHTML = "O";
+    document.getElementById(t[1].toString()).innerHTML = "O";
+    state[t[1]]="O";
     terminate(state);
-    state[t]="O";
+    
 }
